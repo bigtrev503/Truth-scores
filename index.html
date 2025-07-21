@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Truth Scores</title>
+  <style>
+    body {
+      background-color: #111;
+      color: #ccc;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 2rem;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    h1 {
+      font-size: 3rem;
+      margin: 0;
+      color: #00ffcc;
+      letter-spacing: 2px;
+      text-shadow: 0 0 8px #00ffcc, 0 0 12px #005555;
+      font-weight: bold;
+    }
+
+    .section-description {
+      color: #ccc;
+      font-size: 1.1rem;
+      margin-top: 0.5rem;
+    }
+
+    .module-box {
+      background-color: #1c1c1c;
+      border: 1px solid #444;
+      border-radius: 8px;
+      padding: 1.5rem;
+      max-width: 600px;
+      margin: 2rem auto;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 0.8rem;
+      font-size: 1rem;
+      margin-bottom: 1rem;
+      background-color: #222;
+      border: 1px solid #333;
+      border-radius: 4px;
+      color: #fff;
+    }
+
+    button {
+      padding: 0.8rem 1.5rem;
+      background-color: #00ffcc;
+      color: #000;
+      border: none;
+      border-radius: 4px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    .result-box {
+      background-color: #222;
+      color: #00ffcc;
+      padding: 1rem;
+      margin-top: 1rem;
+      border-radius: 6px;
+      font-size: 1.2rem;
+      text-align: center;
+      display: none;
+    }
+
+    .under-construction {
+      text-align: center;
+      margin-top: 3rem;
+      font-size: 1.1rem;
+      color: #999;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 4rem;
+      color: #555;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Truth Scores</h1>
+    <p class="section-description">Make Honesty Count. Call out bullshit with numbers.</p>
+  </header>
+
+  <section class="module-box">
+    <h2>Submit a Claim</h2>
+    <p class="section-description">Enter a statement you'd like to verify. The system will assign it a Truth Score.</p>
+    <input type="text" id="claimInput" placeholder="Example: The Earth is flat.">
+    <button onclick="generateTruthScore()">Analyze</button>
+    <div id="result" class="result-box"></div>
+  </section>
+
+  <!-- Placeholder for future components -->
+  <section class="module-box">
+    <h2>Coming Soon</h2>
+    <p class="section-description">
+      🗳️ Community voting system<br>
+      🧾 Claim leaderboard and receipts<br>
+      💬 Add your own sources and evidence
+    </p>
+  </section>
+
+  <div class="under-construction">
+    🚧 This site is under active construction. Features are being built in real time. Stay tuned.
+  </div>
+
+  <footer>
+    &copy; 2025 Truth Scores. Built to make lies bleed.
+  </footer>
+
+  <script>
+    function generateTruthScore() {
+      const claim = document.getElementById("claimInput").value.trim();
+      const resultBox = document.getElementById("result");
+
+      if (!claim) {
+        resultBox.innerText = "Please enter a claim.";
+        resultBox.style.display = "block";
+        return;
+      }
+
+      const score = Math.floor(Math.random() * 101);
+      let message = "";
+
+      if (score > 90) {
+        message = "💯 Solid as fuck.";
+      } else if (score > 70) {
+        message = "✅ Mostly true.";
+      } else if (score > 40) {
+        message = "🤔 Could go either way.";
+      } else if (score > 20) {
+        message = "🧢 That’s a sketchy-ass claim.";
+      } else {
+        message = "❌ That’s a bold-faced lie, my dude.";
+      }
+
+      resultBox.innerHTML = `<strong>Truth Score: ${score}</strong><br>${message}`;
+      resultBox.style.display = "block";
+    }
+  </script>
+</body>
+</html>
