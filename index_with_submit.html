@@ -1,0 +1,80 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Truth Scores</title>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+</head>
+<body>
+  <h1>Truth Scores</h1>
+
+  <div id="claim-form">
+    <h2>Submit a Statement for Truth Scoring</h2>
+    <textarea id="statementInput" placeholder="Type your claim here..." rows="4" cols="50"></textarea><br>
+    <button onclick="submitStatement()">Submit</button>
+    <p id="submitMessage"></p>
+  </div>
+
+  <script>
+    // TODO: Replace with your own Firebase config
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT_ID.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const auth = firebase.auth();
+
+    // Automatically sign in anonymously for demo/testing
+    auth.signInAnonymously().catch((error) => {
+      console.error("Auth Error:", error.message);
+    });
+
+    function submitStatement() {
+      const statement = document.getElementById("statementInput").value.trim();
+      const user = auth.currentUser;
+
+      if (!user) {
+        document.getElementById("submitMessage").innerText = "You must be logged in to submit.";
+        return;
+      }
+
+      if (statement === "") {
+        document.getElementById("submitMessage").innerText = "Please type a statement.";
+        return;
+      }
+
+      const newStatement = {
+        text: statement,
+        submitted_by: user.uid,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+        score: null,
+        votes: {
+          true: 0,
+          false: 0,
+          needs_context: 0
+        },
+        evidence: []
+      };
+
+      db.collection("statements").add(newStatement)
+        .then(() => {
+          document.getElementById("submitMessage").innerText = "Statement submitted successfully!";
+          document.getElementById("statementInput").value = "";
+        })
+        .catch((error) => {
+          console.error("Error adding document: ", error);
+          document.getElementById("submitMessage").innerText = "Error submitting statement.";
+        });
+    }
+  </script>
+</body>
+</html>
