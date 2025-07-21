@@ -1,0 +1,161 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Truth Scores</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #1e1e1e, #2a2a2a);
+      color: #f5f5f5;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      height: 100vh;
+    }
+
+    header {
+      background: #111;
+      width: 100%;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    }
+
+    header h1 {
+      font-size: 2rem;
+      margin: 0;
+      color: #00ffcc;
+      letter-spacing: 1px;
+    }
+
+    #claim-form {
+      background: #2c2c2c;
+      border-radius: 12px;
+      padding: 30px;
+      margin-top: 40px;
+      width: 90%;
+      max-width: 600px;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+    }
+
+    #claim-form h2 {
+      color: #ffffff;
+      margin-bottom: 10px;
+    }
+
+    textarea {
+      width: 100%;
+      border-radius: 8px;
+      padding: 15px;
+      font-size: 1rem;
+      border: none;
+      resize: vertical;
+      background: #1e1e1e;
+      color: #fff;
+      margin-bottom: 15px;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 1rem;
+      border-radius: 8px;
+      background-color: #00ffcc;
+      border: none;
+      color: #000;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #00ddb3;
+    }
+
+    #submitMessage {
+      margin-top: 15px;
+      font-style: italic;
+      color: #90ee90;
+    }
+  </style>
+
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+</head>
+<body>
+  <header>
+    <h1>Truth Scores</h1>
+  </header>
+
+  <div id="claim-form">
+    <h2>Submit a Statement for Truth Scoring</h2>
+    <textarea id="statementInput" placeholder="Type your claim here..." rows="4"></textarea><br>
+    <button onclick="submitStatement()">Submit</button>
+    <p id="submitMessage"></p>
+  </div>
+
+  <script>
+    // TODO: Replace with your own Firebase config
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT_ID.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const auth = firebase.auth();
+
+    auth.signInAnonymously().catch((error) => {
+      console.error("Auth Error:", error.message);
+    });
+
+    function submitStatement() {
+      const statement = document.getElementById("statementInput").value.trim();
+      const user = auth.currentUser;
+
+      if (!user) {
+        document.getElementById("submitMessage").innerText = "You must be logged in to submit.";
+        return;
+      }
+
+      if (statement === "") {
+        document.getElementById("submitMessage").innerText = "Please type a statement.";
+        return;
+      }
+
+      const newStatement = {
+        text: statement,
+        submitted_by: user.uid,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+        score: null,
+        votes: {
+          true: 0,
+          false: 0,
+          needs_context: 0
+        },
+        evidence: []
+      };
+
+      db.collection("statements").add(newStatement)
+        .then(() => {
+          document.getElementById("submitMessage").innerText = "Statement submitted successfully!";
+          document.getElementById("statementInput").value = "";
+        })
+        .catch((error) => {
+          console.error("Error adding document: ", error);
+          document.getElementById("submitMessage").innerText = "Error submitting statement.";
+        });
+    }
+  </script>
+</body>
+</html>
