@@ -1,0 +1,176 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Truth Scores</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@500&display=swap" rel="stylesheet" />
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Roboto Mono', monospace;
+      background: linear-gradient(145deg, #121212, #1e1e1e);
+      color: #00ffcc;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1rem;
+    }
+
+    .container {
+      background-color: #222;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 0 30px rgba(0, 255, 204, 0.2);
+      width: 100%;
+      max-width: 500px;
+      margin-bottom: 2rem;
+    }
+
+    h1 {
+      font-size: 1.8rem;
+      margin-bottom: 1rem;
+      text-align: center;
+      color: #00ffee;
+    }
+
+    textarea {
+      width: 100%;
+      height: 100px;
+      padding: 1rem;
+      background: #111;
+      border: 1px solid #00ffcc;
+      border-radius: 8px;
+      color: #fff;
+      font-size: 1rem;
+      resize: none;
+      margin-bottom: 1rem;
+    }
+
+    button {
+      width: 100%;
+      padding: 0.75rem;
+      background-color: #00ffcc;
+      border: none;
+      border-radius: 8px;
+      color: #000;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #00e6b8;
+    }
+
+    .score-output {
+      margin-top: 1rem;
+      text-align: center;
+      font-size: 1.25rem;
+      color: #ffffff;
+    }
+
+    .feed {
+      width: 100%;
+      max-width: 500px;
+    }
+
+    .feed-entry {
+      background: #1a1a1a;
+      border-left: 4px solid #00ffcc;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border-radius: 6px;
+      box-shadow: 0 0 5px rgba(0, 255, 204, 0.1);
+    }
+
+    .feed-entry p {
+      margin: 0 0 0.5rem;
+    }
+
+    .feed-entry small {
+      color: #999;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Truth Scores</h1>
+    <form id="truthForm">
+      <textarea id="truthInput" placeholder="Type your claim here..."></textarea>
+      <button type="submit">Submit</button>
+      <div class="score-output" id="scoreOutput"></div>
+    </form>
+  </div>
+
+  <div class="feed" id="claimFeed">
+    <!-- Claims will be injected here -->
+  </div>
+
+  <script>
+    const form = document.getElementById('truthForm');
+    const output = document.getElementById('scoreOutput');
+    const feed = document.getElementById('claimFeed');
+
+    function evaluateClaimAI(claim) {
+      const normalized = claim.toLowerCase();
+      let score = 50;
+      let verdict = "Unclear.";
+
+      const highTruth = [
+        "vaccines work",
+        "earth is round",
+        "climate change is real",
+        "water boils at 100 degrees celsius",
+        "smoking causes cancer"
+      ];
+
+      const highBullshit = [
+        "flat earth",
+        "moon landing was faked",
+        "5g causes covid",
+        "lizard people run the government",
+        "aliens built the pyramids"
+      ];
+
+      if (highTruth.some(t => normalized.includes(t))) {
+        score = 90 + Math.floor(Math.random() * 10);
+        verdict = "Highly credible.";
+      } else if (highBullshit.some(t => normalized.includes(t))) {
+        score = Math.floor(Math.random() * 10) + 5;
+        verdict = "Complete bullshit.";
+      } else {
+        score = 40 + Math.floor(Math.random() * 20);
+        verdict = "Questionable.";
+      }
+
+      return { score, verdict };
+    }
+
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const input = document.getElementById('truthInput');
+      const claim = input.value.trim();
+      if (!claim) return;
+
+      const { score, verdict } = evaluateClaimAI(claim);
+      const scoreText = `Truth Score: ${score}/100 — ${verdict}`;
+      output.innerHTML = `<strong>${scoreText}</strong>`;
+
+      const entry = document.createElement('div');
+      entry.classList.add('feed-entry');
+      entry.innerHTML = `<p>"${claim}"</p><small>${scoreText}</small>`;
+
+      feed.prepend(entry);
+      input.value = "";
+    });
+  </script>
+</body>
+</html>
